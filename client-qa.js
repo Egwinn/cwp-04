@@ -2,7 +2,7 @@ const net = require('net');
 const fs = require('fs');
 const shuffle = require('shuffle-array');
 const port = 8124;
-const clientString = 'QA';
+const startString = 'QA';
 const good = 'ACK';
 const bad = 'DEC';
 let index = -1;
@@ -19,7 +19,7 @@ client.connect({port: port, host: '127.0.0.1'}, (err) => {
       console.log("Connected")
       questions = JSON.parse(text);
       shuffle(questions);
-      client.write(clientString);
+      client.write(startString);
     }
   });
 });

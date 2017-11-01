@@ -2,12 +2,12 @@ const net = require('net');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const algorithm = 'aes-128-cbc';
 const port = 8124;
 const qaString = 'QA';
 const filesString = 'FILES'
 const good = 'ACK';
 const bad = 'DEC';
-const cryptoString = 'aes-128-cbc';
 const saveDirectory = process.env.DIRECTORY_FOR_SAVING_FILES || 'D:/3-ий курс/ПСКП/Мои лабораторные/cwp-03/results';
 const maxConnections = process.env.MAX_NUMBER_OF_CONNECTIONS || 3;
 let seed = 0;
@@ -80,17 +80,21 @@ const server = net.createServer((client) => {
     if(err) console.error("ClientRemoteDialogue: " + err);
     else {
       if (clientModes[client.id] === "REMOTE" && data.toString() !== "REMOTE") {
+        console.log(data);
         if (data.toString().startsWith("COPY")) {
           let dataParts = data.toString().split(" ");
           CreateCopy(dataParts[1], dataParts[2]);
+          client.write("DONE CLONE");
         }
         if (data.toString().startsWith("ENCODE")) {
           let dataParts = data.toString().split(" ");
           EncodeFile(dataParts[1], dataParts[2], dataParts[3]);
+          client.write("DONE ENCODE");
         }
         if (data.toString().startsWith("DECODE")) {
           let dataParts = data.toString().split(" ");
           DecodeFile(dataParts[1], dataParts[2], dataParts[3]);
+          client.write("DONE DECODE");
         }
       }
     }
@@ -121,12 +125,12 @@ function CreateCopy(original, copy) {
 function EncodeFile(original, encoded, key) {
   let file = fs.createReadStream(original);
   let encodeFile = fs.createWriteStream(encoded);
-  let cypher = crypto.createCipher(cryptoString, key);
+  let cypher = crypto.createCipher(algorithm, key);
   file.pipe(cypher).pipe(encodeFile);
 }
 function DecodeFile(original, decoded, key) {
   let file = fs.createReadStream(original);
   let decodeFile = fs.createWriteStream(decoded);
-  let decypher = crypto.createDecipher(cryptoString, key);
+  let decypher = crypto.createDecipher(algorithm, key);
   file.pipe(decypher).pipe(decodeFile);
 }

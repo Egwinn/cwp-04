@@ -23,9 +23,18 @@ client.on('data', (data) => {
     
   if (data === good) {
     console.log("Connected");
-    //sendCopy();
-    //sendEncode();
+    sendCopy();
+  }
+
+  if (data === "DONE CLONE") {
+    sendEncode();
+  }
+
+  if (data === "DONE ENCODE") {
     sendDecode();
+  }
+
+  if (data === "DONE DECODE") {
     client.destroy();
   }
 
@@ -39,7 +48,7 @@ function sendCopy() {
   client.write('COPY files/1.txt files/1-copy.txt');
 }
 
-function sendEncode() {
+function sendEncode(callback) {
   client.write('ENCODE files/1.txt files/1-encoded.txt 1234');
 }
 
